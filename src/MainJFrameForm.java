@@ -92,7 +92,7 @@ public class MainJFrameForm {
 
                     BugReplicationMicroRegularClones brm = new BugReplicationMicroRegularClones();
 
-                    //brm.bugReplicationRQ2();
+                    brm.bugReplicationRQ2();
 
                     long stopTime = System.currentTimeMillis();
                     long elapsedTime = stopTime - startTime;
@@ -131,7 +131,7 @@ public class MainJFrameForm {
 
                     BugReplicationMicroRegularClones brm = new BugReplicationMicroRegularClones();
 
-                    //brm.bugReplicationRQ3();
+                    brm.bugReplicationRQ3();
 
                     long stopTime = System.currentTimeMillis();
                     long elapsedTime = stopTime - startTime;
@@ -168,9 +168,9 @@ public class MainJFrameForm {
 
                     BugReplicationMicroRegularClones brm = new BugReplicationMicroRegularClones();
 
-                    //brm.bugReplicationRQ4();
+                    brm.bugReplicationRQ4();
 
-                    //brm.bugReplication();
+                    brm.bugReplication();
 
                     long stopTime = System.currentTimeMillis();
                     long elapsedTime = stopTime - startTime;

@@ -449,6 +449,222 @@ public class BugReplicationMicroRegularClones {
         }
     }
 
+    //-------------------------------------- This function implementing RQ2 ---------------------------------------
+
+    public void bugReplicationRQ2(){
+        try{
+
+            // --------------------------Implementing RQ2 for Regular Clones----------------------------
+            ArrayList<CodeFragment> bugRepR = new ArrayList<>();
+
+            bugRepR = bugReplicationR();
+
+            int classID1R = 0, classID2R = 0, countRepR = 1, nclonesR = 0, flagR = 0;
+
+            for(int i = 0; i < bugRepR.size(); i++){
+                for(int j = i+1; j < bugRepR.size(); j++){
+                    //if(bugRepR.get(i).revision == bugRepR.get(j).revision && bugRepR.get(i).filepath.equals(bugRepR.get(j).filepath)){
+                    if(bugRepR.get(i).revision == bugRepR.get(j).revision){
+                        System.out.println("Revision number (R) = " + bugRepR.get(i).revision);
+                        classID1R = getClassID(bugRepR.get(i));
+                        classID2R = getClassID(bugRepR.get(j));
+
+                        if(classID1R == classID2R){
+                            countRepR++;
+                            i++;
+                        }
+                        flagR = 1;
+
+                    }
+
+                }
+                if(flagR == 1){
+                    nclonesR = nclonesR + getCloneNumber(bugRepR.get(i-1));
+                    flagR = 0;
+                }
+
+                System.out.println("At i = " + i + " countRepR = " + countRepR);
+                System.out.println("At i = " + i + " nclonesR = " + nclonesR);
+
+                PrintWriter writer = new PrintWriter("Temp_output.txt", "UTF-8");
+
+                writer.println("At i = " + i + " countRepR = " + countRepR);
+                writer.println("At i = " + i + " nclonesR = " + nclonesR);
+
+                writer.close();
+
+                countRepR++;
+            }
+
+            // --------------------------Implementing RQ2 for Micro Clones----------------------------
+            ArrayList<CodeFragment> bugRepM = new ArrayList<>();
+
+            bugRepM = bugReplicationM();
+
+            int classID1M = 0, classID2M = 0, countRepM = 1, nclonesM = 0, flagM = 0;
+
+            for(int i = 0; i < bugRepM.size(); i++){
+                for(int j = i+1; j < bugRepM.size(); j++){
+                    //if(bugRepR.get(i).revision == bugRepR.get(j).revision && bugRepR.get(i).filepath.equals(bugRepR.get(j).filepath)){
+                    if(bugRepM.get(i).revision == bugRepM.get(j).revision){
+                        System.out.println("Revision number (M) = " + bugRepM.get(i).revision);
+                        classID1M = getClassIDMicro(bugRepM.get(i));
+                        classID2M = getClassIDMicro(bugRepM.get(j));
+
+                        if(classID1M == classID2M){
+                            countRepM++;
+                            i++;
+                        }
+                        flagM = 1;
+
+                    }
+
+                }
+                if(flagM == 1){
+                    nclonesM = nclonesM + getCloneNumberMicro(bugRepM.get(i-1));
+                    flagM = 0;
+                }
+
+                System.out.println("At i = " + i + " countRepM = " + countRepM);
+                System.out.println("At i = " + i + " nclonesM = " + nclonesM);
+                countRepM++;
+            }
+        }catch(Exception e){
+            System.out.println("Error in bugReplicationRQ2: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    public int getCloneNumber(CodeFragment cf) {
+        // In this method I use cfFile (a two dimensional array) to store each clone file (iClones clone output file). In first dimension it will store the class number (classID)
+        // and in second dimension it will store each clone fragments.
+        CodeFragment[][] cfFile = new CodeFragment[10000][10000];
+        int numClones = 0;
+        try{
+            File file = new File(InputParameters.pathClone + cf.revision + ".txt"); //All Type
+
+            if(file.exists()) {
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file))); // All Type
+
+                while((br.readLine()) != null) {
+                    cfFile = fileRead(cf.revision);
+
+                    int flag = 0;
+                    for (int i = 0; i < cfFile.length; i++) {
+                        for (int j = 0; j < cfFile.length; j++) {
+                            if (cfFile[i][j] != null) {
+                                if (cf.filepath.equals(cfFile[i][j].filepath) && cf.startline == cfFile[i][j].startline && cf.endline == cfFile[i][j].endline) {
+                                    flag = 1;
+                                }
+                                numClones = j;
+                                //System.out.println("The value of variable numClones inside the inner for loop = " + numClones);
+                            }
+                        }
+                        if (flag == 1) {
+                            //System.out.println("The value of variable numClones returned from getCloneNumber = " + numClones);
+                            return numClones+1;
+                        }
+                    }
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Error in getCloneNumber: " + e);
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getCloneNumberMicro(CodeFragment cf) {
+        // In this method I use cfFile (a two dimensional array) to store each clone file (iClones clone output file). In first dimension it will store the class number (classID)
+        // and in second dimension it will store each clone fragments.
+        CodeFragment[][] cfFile = new CodeFragment[10000][10000];
+        int numClones = 0;
+        try{
+            File file = new File(InputParameters.pathClone + cf.revision + ".txt"); //All Type
+
+            if(file.exists()) {
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file))); // All Type
+
+                while((br.readLine()) != null) {
+                    cfFile = fileReadMicro(cf.revision);
+
+                    int flag = 0;
+                    for (int i = 0; i < cfFile.length; i++) {
+                        for (int j = 0; j < cfFile.length; j++) {
+                            if (cfFile[i][j] != null) {
+                                if (cf.filepath.equals(cfFile[i][j].filepath) && cf.startline == cfFile[i][j].startline && cf.endline == cfFile[i][j].endline) {
+                                    flag = 1;
+                                }
+                                numClones = j;
+                            }
+                        }
+                        if (flag == 1)
+                            return numClones+1;
+                    }
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Error in getCloneNumberMicro: " + e);
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    //-------------------------------------- This function implementing RQ3 ---------------------------------------
+
+    public void bugReplicationRQ3(){
+        try{
+
+            // --------------------------Implementing RQ3 for Regular Clones----------------------------
+
+            bugReplicationR();
+
+            System.out.println("Results of RQ3 Regular code clones:");
+            System.out.println("Total Number of Distinct Bugs(revision) of code clones for Regular = " + countRevR);
+            System.out.println("Total Distinct Number of Replicated Bug Revision in Regular code clone = " + countRevRepR);
+            System.out.println("Percentage of Replicated Bugs in Regular code clones = " + (float) countRevRepR/countRevR*100 + "%\n");
+
+            PrintWriter writer = new PrintWriter("Temp_output.txt", "UTF-8");
+
+            writer.println("Results of RQ3 Regular code clones:");
+            writer.println("Total Number of Distinct Bugs(revision) of code clones for Regular = " + countRevR);
+            writer.println("Total Distinct Number of Replicated Bug Revision in Regular code clone = " + countRevRepR);
+            writer.println("Percentage of Replicated Bugs in Regular code clones = " + (float) countRevRepR/countRevR*100 + "%\n");
+
+            writer.close();
+
+
+            bugReplicationM();
+
+            System.out.println("Results of RQ3 Micro code clones:");
+            System.out.println("Total Number of Distinct Bugs(revision) of code clones for Micro = " + countRevM);
+            System.out.println("Total Distinct Number of Replicated Bug Revision in Micro code clone = " + countRevRepM);
+            System.out.println("Percentage of Replicated Bugs in Micro code clones = " + (float) countRevRepM/countRevM*100 + "%\n");
+
+
+        }catch(Exception e){
+            System.out.println("Error in bugReplicationRQ3: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    //-------------------------------------- This function implementing RQ4 ---------------------------------------
+
+    public void bugReplicationRQ4(){
+        try{
+
+            // --------------------------Implementing RQ4 for Regular Clones----------------------------
+
+            RQ4 = 1;
+
+        }catch(Exception e){
+            System.out.println("Error in bugReplicationRQ4: " + e);
+            e.printStackTrace();
+        }
+    }
+
     public ArrayList<CodeFragment> bugReplicationR(){
         ArrayList<CodeFragment> bugRep = new ArrayList<>();
         try{
@@ -829,7 +1045,7 @@ public class BugReplicationMicroRegularClones {
                         cfXmlFileMicro = fileReadMicro(changedBugFixCommits[i][j].revision);
                         //System.out.println("");
 
-                        // Looping through the each clone file (Deckard clone output file) of each revision
+                        // Looping through the each clone file (iClones clone output file) of each revision
                         for (int m = 0; m < cfXmlFileMicro.length; m++) {
                             for (int n = 0; n < cfXmlFileMicro.length; n++) {
 
@@ -837,7 +1053,7 @@ public class BugReplicationMicroRegularClones {
 
                                     if(changedBugFixCommits[i][j].filepath.equals(cfXmlFileMicro[m][n].filepath)){
 
-                                        // Checking for matches with changed bug-fix commits with each line of clone file (Deckard output file) of a particular revision
+                                        // Checking for matches with changed bug-fix commits with each line of clone file (iClones output file) of a particular revision
                                         // Matches if line numbers of code fragment from changedBugFixCommits are overlapping with line numbers range of cfXmlFileMicro
                                         if(((changedBugFixCommits[i][j].startline >= cfXmlFileMicro[m][n].startline) && (changedBugFixCommits[i][j].endline <= cfXmlFileMicro[m][n].endline))
                                                 ||((changedBugFixCommits[i][j].startline <= cfXmlFileMicro[m][n].startline) && (changedBugFixCommits[i][j].endline <= cfXmlFileMicro[m][n].endline)
@@ -913,10 +1129,10 @@ public class BugReplicationMicroRegularClones {
                         //System.out.println("Revision = " + cfXmlFileMatch[i].revision);
 
                         classID1 = getClassIDMicro(cfXmlFileMatch[i]);
-                        //System.out.println("classID1 in Micro = " + classID1);
+                        System.out.println("classID1 in Micro = " + classID1);
 
                         classID2 = getClassIDMicro(cfXmlFileMatch[j]);
-                        //System.out.println("classID2 in Micro = " + classID2 + "\n");
+                        System.out.println("classID2 in Micro = " + classID2 + "\n");
 
                         if(classID1 == classID2){
                             System.out.print("********************************************Pair Found (Micro)********************************************");
@@ -1036,8 +1252,8 @@ public class BugReplicationMicroRegularClones {
                         if(cloneSize>4) { // For regular clones
                             //if(cloneSize<5) {    // For micro clones
                             flagRegular = 1;
-                            cfFile[i][j].startline = startLine;
-                            cfFile[i][j].endline = endLine;
+                            cfFile[i][j].startline = Integer.parseInt(str.split("\\s+")[3].trim());
+                            cfFile[i][j].endline = Integer.parseInt(str.split("\\s+")[4].trim());
                             cfFile[i][j].filepath = str.split("\\s+")[2].trim();
                             j++;
                         }
@@ -1172,8 +1388,8 @@ public class BugReplicationMicroRegularClones {
                         //if(cloneSize>4) { // For regular clones
                         if(cloneSize<5) {    // For micro clones
                             flagRegular = 1;
-                            cfFile[i][j].startline = startLine;
-                            cfFile[i][j].endline = endLine;
+                            cfFile[i][j].startline = Integer.parseInt(str.split("\\s+")[3].trim());
+                            cfFile[i][j].endline = Integer.parseInt(str.split("\\s+")[4].trim());
                             cfFile[i][j].filepath = str.split("\\s+")[2].trim();
                             j++;
                         }
@@ -1313,7 +1529,7 @@ public class BugReplicationMicroRegularClones {
         CodeFragment[][] cfFile = new CodeFragment[1000][1000];
         int classID;
         try{
-            ArrayList<CodeFragment> cfFileMicro = new ArrayList<>();
+            //ArrayList<CodeFragment> cfFileMicro = new ArrayList<>();
 
             File file = new File(InputParameters.pathClone + cf.revision + ".txt"); //All Type
 
