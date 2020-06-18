@@ -53,7 +53,7 @@ public class MainJFrameForm {
 
                     BugReplicationMicroRegularClones brm = new BugReplicationMicroRegularClones();
 
-                    //brm.bugReplication();
+                    brm.bugReplication();
 
                     long stopTime = System.currentTimeMillis();
                     long elapsedTime = stopTime - startTime;
