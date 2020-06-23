@@ -689,10 +689,10 @@ public class BugReplicationMicroRegularClones {
         ArrayList<CodeFragment> bugRep = new ArrayList<>();
         try{
             //CodeFragment[][] cloneFragmentPair = new CodeFragment[10000][2]; // was 10000 before optimization
-
             //cloneFragmentPair = isClonePair();
 
-            //cloneFragmentPair = cfp;
+            //CodeFragment[][] cfp = new CodeFragment[10000][2]; // was 10000 before optimization
+            //cfp = isClonePair();
 
             isClonePair();
 
@@ -907,6 +907,7 @@ public class BugReplicationMicroRegularClones {
         return bugRep;
     }
 
+    //public CodeFragment[][] isClonePair(){
     public void isClonePair(){
         //CodeFragment[][] cfp = new CodeFragment[5000][2];   // was 10000 before optimization
         try{
@@ -1060,6 +1061,7 @@ public class BugReplicationMicroRegularClones {
             CodeFragment[] cfXmlFileMatch = new CodeFragment[1000000];   // was 50000 before optimization
 
             //CodeFragment[][] cfpReg = new CodeFragment[10000][2];   // was 50000 before optimization
+            //CodeFragment[][] cfp = new CodeFragment[10000][2];   // was 50000 before optimization
 
             int x = 0;
 
@@ -1178,6 +1180,7 @@ public class BugReplicationMicroRegularClones {
             }
 
             //cfpReg = isClonePair();
+            //cfp = isClonePair();
 
             if(cfpMicro != null)
                 for (int i = 0; i < cfpMicro.length; i++)
@@ -1222,7 +1225,7 @@ public class BugReplicationMicroRegularClones {
                             System.out.println("isClonePairMicro: Deleted Pair cfpReg["+j+"][1].revision = " + cfp[j][1].revision + " Filepath = "
                                     + cfp[j][1].filepath + " Startline = " + cfp[j][1].startline + " Endline = " + cfp[j][1].endline);
 
-                            for(x = i; cfpMicro[x][0] != null && cfpMicro[x+1][0] != null; x++){
+                            for(x = i; cfpMicro[x][0] != null && cfpMicro[x+1][0] != null; x++){ // To solve the null pointer exception I added the condition for x+1.
                                 cfpMicro[x][0] = cfpMicro[x+1][0];
                                 cfpMicro[x][1] = cfpMicro[x+1][1];
                             }
