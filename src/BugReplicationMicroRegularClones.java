@@ -1031,8 +1031,6 @@ public class BugReplicationMicroRegularClones {
                         if(classID1 == classID2){
                             System.out.print("********************************************Pair Found (Regular)********************************************");
                             System.out.println(" Revision number = " + cfFileMatch[i].revision);
-                            //cfp[x][0] = new CodeFragment();
-                            //cfp[x][1] = new CodeFragment();
 
                             cfp[x][0] = cfFileMatch[i];
                             cfp[x][1] = cfFileMatch[j];
@@ -1165,9 +1163,6 @@ public class BugReplicationMicroRegularClones {
                         if(classID1 == classID2){
                             System.out.print("********************************************Pair Found (Micro)********************************************");
                             System.out.println(" Revision number = " + cfXmlFileMatch[i].revision);
-
-                            //cfpMicro[x][0] = new CodeFragment();
-                            //cfpMicro[x][1] = new CodeFragment();
 
                             cfpMicro[x][0] = cfXmlFileMatch[i];
                             cfpMicro[x][1] = cfXmlFileMatch[j];
@@ -1597,7 +1592,6 @@ public class BugReplicationMicroRegularClones {
             System.exit(0);
         }
         return 0;
-
     }
 
     public int isClonePairBinary(CodeFragment cf1, CodeFragment cf2){
@@ -1639,7 +1633,6 @@ public class BugReplicationMicroRegularClones {
             System.exit(0);
         }
         return pair;
-
     }
 
     public CodeFragment getInstanceInNextRevision(CodeFragment cf) {
