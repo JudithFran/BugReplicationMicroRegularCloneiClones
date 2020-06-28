@@ -685,6 +685,257 @@ public class BugReplicationMicroRegularClones {
         }
     }
 
+    //-------------------------------------- This function implementing RQ5 ---------------------------------------
+
+    public void bugReplicationRQ5(){
+        try{
+            // -----------------------------Implementing RQ5 for Regular Clones---------------------------------
+            ArrayList<CodeFragment> bugRepR = new ArrayList<>();
+            int lineNumberR = 0;
+            int lineNumberRepR = 0;
+
+            CodeFragment[][] changedBugFixCommits = new CodeFragment[500][500];   // was 10000 before optimization
+            changedBugFixCommits = getChangedBugFixCommits();
+
+            // Looping through the changed bug-fix commit 2D array
+            for(int i = 0; i<changedBugFixCommits.length; i++){
+                for(int j = 0; j<changedBugFixCommits.length; j++){
+                    if(changedBugFixCommits[i][j] != null){
+                        //System.out.println("Revision number = " + changedBugFixCommits[i][j].revision);
+                        lineNumberR += countLineNumber(changedBugFixCommits[i][j].revision);
+                        //System.out.println("lineNumberR = " + lineNumberR);
+                    }
+                }
+            }
+
+            bugRepR = bugReplicationR();
+
+            for(int i=0; i<bugRepR.size(); i++){
+                lineNumberRepR += countLineNumber(bugRepR.get(i).revision);
+                //System.out.println("lineNumberRepR = " + lineNumberRepR);
+            }
+
+            //System.out.println("******************************The Percentage of Line Coverage in Regular = " + (float) lineNumberRepR/lineNumberR*100 + "***********************************");
+
+            // -----------------------------Implementing RQ5 for Micro Clones---------------------------------
+            ArrayList<CodeFragment> bugRepM = new ArrayList<>();
+            int lineNumberM = 0;
+            int lineNumberRepM = 0;
+
+            // Looping through the changed bug-fix commit 2D array
+            for(int i = 0; i<changedBugFixCommits.length; i++){
+                for(int j = 0; j<changedBugFixCommits.length; j++){
+                    if(changedBugFixCommits[i][j] != null){
+                        //System.out.println("Revision number = " + changedBugFixCommits[i][j].revision);
+                        lineNumberM += countLineNumberMicro(changedBugFixCommits[i][j].revision);
+                        //System.out.println("lineNumberM = " + lineNumberM);
+                    }
+                }
+            }
+
+            bugRepM = bugReplicationM();
+
+            for(int i=0; i<bugRepM.size(); i++){
+                lineNumberRepM += countLineNumberMicro(bugRepM.get(i).revision);
+                System.out.println("lineNumberRepM = " + lineNumberRepM);
+            }
+
+            //System.out.println("******************************The Percentage of Line Coverage in Micro = " + (float) lineNumberRepM/lineNumberM*100 + "***********************************");
+
+            System.out.println("Results for RQ5 is: \n");
+
+            System.out.println("lineNumberR = " + lineNumberR);
+            System.out.println("lineNumberRepR = " + lineNumberRepR);
+            System.out.println("The Percentage of Line Coverage in Regular = " + (float) lineNumberRepR/lineNumberR*100);
+
+            System.out.println("lineNumberM = " + lineNumberM);
+            System.out.println("lineNumberRepM = " + lineNumberRepM);
+            System.out.println("The Percentage of Line Coverage in Micro = " + (float) lineNumberRepM/lineNumberM*100);
+
+        }catch(Exception e){
+            System.out.println("Error in bugReplicationRQ5: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    public int countLineNumber(int rev){
+        int lineNumber = 0;
+        try {
+            CodeFragment[] cfFile = new CodeFragment[5000];
+            CodeFragment[] cfFile1 = new CodeFragment[5000];
+
+            File fileiClones = new File(InputParameters.pathClone + rev + ".txt"); //All Type
+
+            if (fileiClones.exists()) {
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileiClones))); // All Type
+
+                String str = "";
+                int i = 0;
+
+                // Reading each clone file (each output file of iClones) and excluding micro-clones
+                while ((str = br.readLine()) != null) {
+                    if (str.contains(".c") || str.contains(".h") || str.contains(".java")) {
+                        int startLine, endLine;
+                        cfFile[i] = new CodeFragment();
+                        cfFile[i].revision = rev;
+
+                        startLine = Integer.parseInt(str.split("\\s+")[3].trim());
+                        endLine = Integer.parseInt(str.split("\\s+")[4].trim());
+                        int cloneSize = (endLine-startLine)+1;
+                        //System.out.println("startLine = " + startLine + " endLine = " + endLine + " cloneSize = " + cloneSize);
+
+                        if(cloneSize>4) { // For regular clones
+                            cfFile[i].startline = Integer.parseInt(str.split("\\s+")[3].trim());
+                            cfFile[i].endline = Integer.parseInt(str.split("\\s+")[4].trim());
+                            cfFile[i].filepath = str.split("\\s+")[2].trim();
+                            i++;
+                        }
+                    }
+
+                }
+            }
+
+            /*
+            System.out.println("\ncfFile after excluding micro clones: \n");
+            for (int m = 0; m < cfFile.length; m++) {
+                if (cfFile[m] != null) {
+                    System.out.println("cfFile[" + m + "] Revision = " + cfFile[m].revision + " File Path = " + cfFile[m].filepath
+                        + " Start Line = " + cfFile[m].startline + " End Line = " + cfFile[m].endline);
+                }
+                else
+                    break;
+            }
+            */
+
+            // Discard empty clones from the cfFile array
+            int m = 0;
+            for (int i = 0; i < cfFile.length; i++) {
+                if (cfFile[i] != null && cfFile[i].startline != -1) {
+                    cfFile1[m] = cfFile[i];
+                }
+                else if (cfFile[i] != null && cfFile[i].startline == -1) {
+                    m--;
+                }
+                m++;
+            }
+
+            /*
+            System.out.println("\ncfFile1 after excluding empty clones: \n");
+            for (m = 0; m < cfFile1.length; m++) {
+                if (cfFile1[m] != null) {
+                    System.out.println("cfFile1[" + m + "] Revision = " + cfFile1[m].revision + " File Path = " + cfFile1[m].filepath
+                        + " Start Line = " + cfFile1[m].startline + " End Line = " + cfFile1[m].endline);
+                }
+                else
+                    break;
+            }
+            */
+
+            for (int i = 0; i < cfFile1.length; i++){
+                if (cfFile1[i] != null) {
+                    int cloneSize = cfFile1[i].endline-cfFile1[i].startline+1;
+                    lineNumber += cloneSize;
+                }
+            }
+
+        } catch(Exception e){
+            System.out.println("Error in method countLineNumber()." + e);
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return lineNumber;
+    }
+
+    public int countLineNumberMicro(int rev){
+        int lineNumber = 0;
+        try {
+            CodeFragment[] cfFile = new CodeFragment[5000];
+            CodeFragment[] cfFile1 = new CodeFragment[5000];
+
+            File fileiClones = new File(InputParameters.pathClone + rev + ".txt"); //All Type
+
+            if (fileiClones.exists()) {
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileiClones))); // All Type
+
+                String str = "";
+                int i = 0;
+
+                // Reading each clone file (each output file of iClones) and excluding micro-clones
+                while ((str = br.readLine()) != null) {
+                    if (str.contains(".c") || str.contains(".h") || str.contains(".java")) {
+                        int startLine, endLine;
+                        cfFile[i] = new CodeFragment();
+                        cfFile[i].revision = rev;
+
+                        startLine = Integer.parseInt(str.split("\\s+")[3].trim());
+                        endLine = Integer.parseInt(str.split("\\s+")[4].trim());
+                        int cloneSize = (endLine-startLine)+1;
+                        //System.out.println("startLine = " + startLine + " endLine = " + endLine + " cloneSize = " + cloneSize);
+
+                        if(cloneSize<5) { // For micro clones
+                            cfFile[i].startline = Integer.parseInt(str.split("\\s+")[3].trim());
+                            cfFile[i].endline = Integer.parseInt(str.split("\\s+")[4].trim());
+                            cfFile[i].filepath = str.split("\\s+")[2].trim();
+                            i++;
+                        }
+                    }
+
+                }
+            }
+
+            /*
+            System.out.println("\ncfFile after excluding micro clones: \n");
+            for (int m = 0; m < cfFile.length; m++) {
+                if (cfFile[m] != null) {
+                    System.out.println("cfFile[" + m + "] Revision = " + cfFile[m].revision + " File Path = " + cfFile[m].filepath
+                        + " Start Line = " + cfFile[m].startline + " End Line = " + cfFile[m].endline);
+                }
+                else
+                    break;
+            }
+            */
+
+            // Discard empty clones from the cfFile array
+            int m = 0;
+            for (int i = 0; i < cfFile.length; i++) {
+                if (cfFile[i] != null && cfFile[i].startline != -1) {
+                    cfFile1[m] = cfFile[i];
+                }
+                else if (cfFile[i] != null && cfFile[i].startline == -1) {
+                    m--;
+                }
+                m++;
+            }
+
+            /*
+            System.out.println("\ncfFile1 after excluding empty clones: \n");
+            for (m = 0; m < cfFile1.length; m++) {
+                if (cfFile1[m] != null) {
+                    System.out.println("cfFile1[" + m + "] Revision = " + cfFile1[m].revision + " File Path = " + cfFile1[m].filepath
+                        + " Start Line = " + cfFile1[m].startline + " End Line = " + cfFile1[m].endline);
+                }
+                else
+                    break;
+            }
+            */
+
+            for (int i = 0; i < cfFile1.length; i++){
+                if (cfFile1[i] != null) {
+                    int cloneSize = cfFile1[i].endline-cfFile1[i].startline+1;
+                    lineNumber += cloneSize;
+                }
+            }
+
+        } catch(Exception e){
+            System.out.println("Error in method countLineNumber()." + e);
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return lineNumber;
+    }
+
     public ArrayList<CodeFragment> bugReplicationR(){
         ArrayList<CodeFragment> bugRep = new ArrayList<>();
         try{
@@ -1278,7 +1529,6 @@ public class BugReplicationMicroRegularClones {
                         //System.out.println("startLine = " + startLine + " endLine = " + endLine + " cloneSize = " + cloneSize);
 
                         if(cloneSize>4) { // For regular clones
-                            //if(cloneSize<5) {    // For micro clones
                             flagRegular = 1;
                             cfFile[i][j].startline = Integer.parseInt(str.split("\\s+")[3].trim());
                             cfFile[i][j].endline = Integer.parseInt(str.split("\\s+")[4].trim());
@@ -1414,7 +1664,6 @@ public class BugReplicationMicroRegularClones {
 
                         //System.out.println("startLine = " + startLine + " endLine = " + endLine + " cloneSize = " + cloneSize);
 
-                        //if(cloneSize>4) { // For regular clones
                         if(cloneSize<5) {    // For micro clones
                             flagRegular = 1;
                             cfFile[i][j].startline = Integer.parseInt(str.split("\\s+")[3].trim());

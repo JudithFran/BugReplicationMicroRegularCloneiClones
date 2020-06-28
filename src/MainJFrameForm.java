@@ -13,6 +13,7 @@ public class MainJFrameForm {
     private JLabel showSystemInfoLabel;
     private JLabel selectSubjectSystemLabel;
     public JLabel titleLabel;
+    private JButton percentageOfLineCoverageButton;
 
     public MainJFrameForm() {
         showSystemInfoButton.addActionListener(new ActionListener() {
@@ -189,6 +190,45 @@ public class MainJFrameForm {
 
                 }catch(Exception e){
                     System.out.println("Error in percentageOfSevereReplicatedButton (RQ4): " + e);
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        percentageOfLineCoverageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                // TODO add your handling code here: *****************************************************RQ5**************************************************************
+                try{
+                    long startTime = System.currentTimeMillis();
+                    String systemName = "";
+                    systemName = comboBox1.getSelectedItem().toString();
+                    //System.out.println("System selected in ComboBox: " + systemName);
+
+                    InputParameters ip = new InputParameters();
+                    ip.setParameters(systemName);
+
+                    BugReplicationMicroRegularClones brm = new BugReplicationMicroRegularClones();
+
+                    brm.bugReplicationRQ5();
+
+                    long stopTime = System.currentTimeMillis();
+                    long elapsedTime = stopTime - startTime;
+                    long sTime = (long) (elapsedTime*0.001);
+                    long mTime = sTime/60;
+                    sTime = sTime%60;
+                    long hTime;
+
+                    if(mTime >= 60) {
+                        hTime = mTime/60;
+                        mTime = mTime%60;
+                        System.out.println("Total execution time for RQ5 = " + hTime + " hours " + mTime + " minutes");
+                    }
+                    else
+                        System.out.println("Total execution time for RQ5 = " + mTime + " minutes " + sTime + " seconds");
+
+                }catch(Exception e){
+                    System.out.println("Error in percentageOfLineCoverageButton (RQ5): " + e);
                     e.printStackTrace();
                 }
             }
