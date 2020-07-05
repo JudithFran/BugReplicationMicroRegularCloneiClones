@@ -761,12 +761,15 @@ public class BugReplicationMicroRegularClones {
     public int countLineNumber(int rev){
         int lineNumber = 0;
         try {
-            CodeFragment[] cfFile = new CodeFragment[5000];
-            CodeFragment[] cfFile1 = new CodeFragment[5000];
+            CodeFragment[] cfFile = new CodeFragment[10000];
+            CodeFragment[] cfFile1 = new CodeFragment[10000];
 
             File fileiClones = new File(InputParameters.pathClone + rev + ".txt"); //All Type
 
-            if (fileiClones.exists()) {
+            //if (fileiClones.exists()) {
+            if (fileiClones.exists() && rev <= 100) { // Tuning for feasible experiment for Jabref
+            //if (fileiClones.exists() && rev <= 50) { // Tuning for feasible experiment for Carol
+            //if (fileiClones.exists() && rev <= 1050) { // Tuning for feasible experiment for Freecol
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileiClones))); // All Type
 
@@ -850,12 +853,15 @@ public class BugReplicationMicroRegularClones {
     public int countLineNumberMicro(int rev){
         int lineNumber = 0;
         try {
-            CodeFragment[] cfFile = new CodeFragment[5000];
-            CodeFragment[] cfFile1 = new CodeFragment[5000];
+            CodeFragment[] cfFile = new CodeFragment[10000];
+            CodeFragment[] cfFile1 = new CodeFragment[10000];
 
             File fileiClones = new File(InputParameters.pathClone + rev + ".txt"); //All Type
 
-            if (fileiClones.exists()) {
+            //if (fileiClones.exists()) {
+            if (fileiClones.exists() && rev <= 100) { // Tuning for feasible experiment for Jabref
+            //if (fileiClones.exists() && rev <= 50) { // Tuning for feasible experiment for Carol
+            //if (fileiClones.exists() && rev <= 1050) { // Tuning for feasible experiment for Freecol
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileiClones))); // All Type
 
@@ -1496,7 +1502,10 @@ public class BugReplicationMicroRegularClones {
 
             File fileiClones = new File(InputParameters.pathClone + rev + ".txt"); //All Type
 
-            if (fileiClones.exists()) {
+            //if (fileiClones.exists()) {
+            if (fileiClones.exists() && rev <= 100) { // Tuning for feasible experiment for Jabref
+            //if (fileiClones.exists() && rev <= 50) { // Tuning for feasible experiment for Carol
+            //if (fileiClones.exists() && rev <= 1050) { // Tuning for feasible experiment for Freecol
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileiClones))); // All Type
 
@@ -1632,7 +1641,10 @@ public class BugReplicationMicroRegularClones {
 
             File fileiClones = new File(InputParameters.pathClone + rev + ".txt"); //All Type
 
-            if (fileiClones.exists()) {
+            //if (fileiClones.exists()) {
+            if (fileiClones.exists() && rev <= 100) { // Tuning for feasible experiment for Jabref
+            //if (fileiClones.exists() && rev <= 50) { // Tuning for feasible experiment for Carol
+            //if (fileiClones.exists() && rev <= 1050) { // Tuning for feasible experiment for Freecol
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileiClones))); // All Type
 
@@ -1677,7 +1689,7 @@ public class BugReplicationMicroRegularClones {
             }
 
             /*
-            System.out.println("\ncfFile after excluding micro clones: \n");
+            System.out.println("\ncfFile after excluding regular clones: \n");
             for (int m = 0; m < cfFile.length; m++) {
                 for (int n = 0; n < cfFile.length; n++) {
                     if (cfFile[m][n] != null) {
